@@ -1,0 +1,14 @@
+directories:
+  output: dist
+  buildResources: build
+appId: com.sample.electronapp
+productName: ElectronSample
+files:
+  - filter:
+      - electron-main.ts
+      - frontend/dist/**/*
+      - backend/**/*
+      - package.json
+win:
+  target: nsis
+electronVersion: 39.2.3

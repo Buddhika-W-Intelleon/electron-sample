@@ -1,0 +1,37 @@
+{
+  "name": "electron-sample",
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "Your Name",
+    "email": "buddhika.w@intelleon.com"},
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "electron": "^39.2.3",
+    "electron-builder": "^26.0.12",
+    "wait-on": "^9.0.3"
+  },
+  "scripts": {
+  "postinstall": "cd frontend && npm install",
+  "build:react": "cd frontend && npm run build",
+  "package": "npm run build:react && electron-builder",
+  "start": "electron ."
+},
+"build": {
+  "appId": "com.sample.electronapp",
+  "productName": "ElectronSample",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "electron-main.ts",
+    "frontend/dist/**/*",
+    "backend/**/*",
+    "package.json"
+  ],
+  "win": {
+    "target": "nsis"
+  }
+}
+
+}
