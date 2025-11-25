@@ -1,29 +1,40 @@
 import { app, BrowserWindow } from 'electron';
-import * as path from 'path';
+import { spawn } from "child_process";
+import path from 'path';
+
+let mainWindow: BrowserWindow;
+let backendProcess: any;
 
 function createWindow() {
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+  mainWindow = new BrowserWindow({
+    width: 900,
+    height: 700,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
     },
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.loadURL('http://localhost:5173'); // vite dev server
-  } else {
-    mainWindow.loadURL(`file://${path.join(__dirname, '../dist/index.html')}`);
-  }
+  mainWindow.loadURL("http://localhost:5173"); // React dev mode
 }
 
-app.whenReady().then(createWindow);
+// START BACKEND ON APP RUN
+function startBackend() {
+  const backendPath = path.join(__dirname, "backend/server.js");
+  backendProcess = spawn("node", [backendPath], { shell: true });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  backendProcess.stdout.on("data", (data) => {
+    console.log(`Backend: ${data}`);
+  });
+}
+
+// STOP BACKEND WHEN APP CLOSES
+app.on("window-all-closed", () => {
+  if (backendProcess) backendProcess.kill();
+  if (process.platform !== "darwin") app.quit();
 });
 
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) createWindow();
+app.whenReady().then(() => {
+  startBackend();
+  createWindow();
 });
