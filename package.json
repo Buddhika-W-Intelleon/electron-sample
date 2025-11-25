@@ -2,36 +2,39 @@
   "name": "electron-sample",
   "version": "1.0.0",
   "license": "MIT",
+  "main": "dist-electron/electron-main.js",
   "author": {
-    "name": "Your Name",
-    "email": "buddhika.w@intelleon.com"},
+    "name": "Buddhika Pathum",
+    "email": "buddhika.w@intelleon.com"
+  },
   "devDependencies": {
     "concurrently": "^9.2.1",
     "electron": "^39.2.3",
     "electron-builder": "^26.0.12",
-    "wait-on": "^9.0.3"
+    "wait-on": "^9.0.3",
+    "typescript": "^5.0.0"
   },
   "scripts": {
-  "postinstall": "cd frontend && npm install",
-  "build:react": "cd frontend && npm run build",
-  "package": "npm run build:react && electron-builder",
-  "start": "electron ."
-},
-"build": {
-  "appId": "com.sample.electronapp",
-  "productName": "ElectronSample",
-  "directories": {
-    "output": "dist"
+    "postinstall": "cd frontend && npm install",
+    "build:react": "cd frontend && npm run build",
+    "build:electron": "tsc electron-main.ts --outDir dist-electron",
+    "package": "npm run build:react && npm run build:electron && electron-builder",
+    "start": "npm run build:electron && electron ."
   },
-  "files": [
-    "electron-main.ts",
-    "frontend/dist/**/*",
-    "backend/**/*",
-    "package.json"
-  ],
-  "win": {
-    "target": "nsis"
+  "build": {
+    "appId": "com.sample.electronapp",
+    "productName": "ElectronSample",
+    "directories": {
+      "output": "dist",
+      "buildResources": "assets"
+    },
+    "files": [
+      "dist-electron/**/*",
+      "frontend/dist/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis"
+    }
   }
-}
-
 }

@@ -1,10 +1,8 @@
 import { app, BrowserWindow } from 'electron';
-import path from 'path';
-
-let mainWindow: BrowserWindow;
+import * as path from 'path';
 
 function createWindow() {
-  mainWindow = new BrowserWindow({
+  const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
     webPreferences: {
@@ -13,8 +11,11 @@ function createWindow() {
     },
   });
 
-  // Load the React app (after build)
-  mainWindow.loadFile(path.join(__dirname, 'frontend/dist/index.html'));
+  if (process.env.NODE_ENV === 'development') {
+    mainWindow.loadURL('http://localhost:5173'); // vite dev server
+  } else {
+    mainWindow.loadURL(`file://${path.join(__dirname, '../dist/index.html')}`);
+  }
 }
 
 app.whenReady().then(createWindow);

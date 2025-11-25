@@ -1,13 +1,12 @@
 directories:
   output: dist
-  buildResources: build
+  buildResources: assets
 appId: com.sample.electronapp
 productName: ElectronSample
 files:
   - filter:
-      - electron-main.ts
+      - dist-electron/**/*
       - frontend/dist/**/*
-      - backend/**/*
       - package.json
 win:
   target: nsis
