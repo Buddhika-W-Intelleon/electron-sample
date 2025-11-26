@@ -2,3 +2,5 @@ node_modules
 dist
 dist-electron
 frontend/dist
+backend/dist
+.env

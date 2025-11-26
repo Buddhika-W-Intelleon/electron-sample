@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import { spawn } from "child_process";
-import path from 'path';
+import * as path from 'path';
 
 let mainWindow: BrowserWindow;
 let backendProcess: any;
@@ -14,18 +14,25 @@ function createWindow() {
       contextIsolation: true,
     },
   });
-
-  mainWindow.loadURL("http://localhost:5173"); // React dev mode
+if (app.isPackaged) {
+    // ❗ IMPORTANT: Load built React app
+    mainWindow.loadFile(path.join(__dirname, "../frontend/dist/index.html"));
+  } else {
+    // Dev mode
+    mainWindow.loadURL("http://localhost:5173");
+    mainWindow.webContents.openDevTools();
+  } // React dev mode
 }
 
 // START BACKEND ON APP RUN
 function startBackend() {
-  const backendPath = path.join(__dirname, "backend/server.js");
+  const backendPath = app.isPackaged
+    ? path.join(process.resourcesPath, "backend/server.js") // <-- exe location
+    : path.join(__dirname, "backend/server.js");            // dev
+
   backendProcess = spawn("node", [backendPath], { shell: true });
 
-  backendProcess.stdout.on("data", (data) => {
-    console.log(`Backend: ${data}`);
-  });
+  backendProcess.stdout.on("data", (data) => console.log(`Backend: ${data}`));
 }
 
 // STOP BACKEND WHEN APP CLOSES
@@ -35,6 +42,7 @@ app.on("window-all-closed", () => {
 });
 
 app.whenReady().then(() => {
+  console.log("Is packaged?", app.isPackaged);
   startBackend();
   createWindow();
 });

@@ -14,5 +14,5 @@ app.get('/health', (req: Request, res: Response) => {
   res.json({ status: "ok", time: new Date().toISOString() });
 });
 
-const PORT = 3001;
+const PORT = 2000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
