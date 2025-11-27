@@ -15,15 +15,16 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "postinstall": "cd frontend && npm install",
-    "build:react": "cd frontend && npm run build",
-    "build:electron": "tsc electron-main.ts --outDir dist-electron",
-    "package": "npm run build:react && npm run build:electron && electron-builder",
-    "start": "npm run build:electron && electron ."
-  },
+  "postinstall": "cd frontend && npm install",
+  "build:react": "cd frontend && npm run build",
+  "build:backend": "cd e-backend && tsc",
+  "build:electron": "tsc electron-main.ts --outDir dist-electron && tsc preload.ts --outDir dist-electron",
+  "package": "npm run build:react && npm run build:backend && npm run build:electron && electron-builder",
+  "start": "npm run build:backend && npm run build:electron && electron ."
+},
   "build": {
     "appId": "com.sample.electronapp",
-    "productName": "ElectronSample",
+    "productName": "Testing-Backend-No.13",
     "directories": {
       "output": "dist",
       "buildResources": "assets"
@@ -31,10 +32,26 @@
     "files": [
       "dist-electron/**/*",
       "frontend/dist/**/*",
+      "e-backend/**/**",
       "package.json"
     ],
     "win": {
       "target": "nsis"
+    },
+    "extraResources": [
+    {
+      "from": "frontend/dist/",
+      "to": "frontend/dist"
+    },
+    {
+      "from": "e-backend/dist-backend/",
+      "to": "e-backend/dist-backend"
+    },
+    {
+      "from": "e-backend/node_modules/",
+      "to": "e-backend/node_modules"
     }
+  ],
+  "asar": true
   }
 }
