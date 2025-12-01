@@ -24,7 +24,7 @@
 },
   "build": {
     "appId": "com.sample.electronapp",
-    "productName": "Testing-Backend-No.13",
+    "productName": "Testing-Backend-No.16",
     "directories": {
       "output": "dist",
       "buildResources": "assets"

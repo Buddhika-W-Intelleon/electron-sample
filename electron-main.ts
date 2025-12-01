@@ -33,7 +33,7 @@ function startBackend() {
     ? path.join(process.resourcesPath, "e-backend", "dist-backend", "server.js")
     : path.join(__dirname, "..", "e-backend", "dist-backend", "server.js");
 
-  log("Backend path: " + backendPath+ " by Calude");
+  log("Backend path: " + backendPath);
   log("Backend exists? " + fs.existsSync(backendPath));
 
   if (!fs.existsSync(backendPath)) {

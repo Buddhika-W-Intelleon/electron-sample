@@ -8,7 +8,8 @@ const fs = require("fs");
 const bcrypt = require("bcrypt");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const logger_1 = require("./logger"); // <<< NEW!
+const logger_1 = require("./logger");
+const multer = require("multer");
 logger_1.log.info("Backend starting");
 // Detect packaged mode
 const isPackaged = (() => {
@@ -137,6 +138,40 @@ app.post("/api/login", async (req, res) => {
     }
 });
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+const upload = multer({ storage: multer.memoryStorage() });
+// --- Create files table if it doesn't exist ---
+async function initFilesTable() {
+    try {
+        const exists = await db.schema.hasTable("files");
+        if (!exists) {
+            await db.schema.createTable("files", (t) => {
+                t.increments("id").primary();
+                t.text("file"); // Base64 string
+            });
+            logger_1.log.info("files table created");
+        }
+    }
+    catch (err) {
+        logger_1.log.error("DB init error (files table): " + err.message);
+    }
+}
+initFilesTable();
+// --- Upload route ---
+app.post("/api/upload", upload.single("file"), async (req, res) => {
+    try {
+        if (!req.file)
+            return res.status(400).json({ error: "No file uploaded" });
+        const base64Data = req.file.buffer.toString("base64");
+        // Store in DB
+        await db("files").insert({ file: base64Data });
+        logger_1.log.info(`File uploaded: ${req.file.originalname} (${req.file.size} bytes)`);
+        res.json({ success: true });
+    }
+    catch (err) {
+        logger_1.log.error("Upload error: " + err.message);
+        res.status(500).json({ error: "Internal error" });
+    }
+});
 // Start backend
 const PORT = Number(process.env.PORT || 3001);
 app.listen(PORT, "0.0.0.0", () => {
