@@ -10,6 +10,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const logger_1 = require("./logger");
 const ini = require("ini");
+const multer = require("multer");
 logger_1.log.info("Backend starting");
 // Detect packaged mode
 const isPackaged = (() => {
@@ -38,6 +39,8 @@ function getAppDataDir() {
 const APP_DATA_DIR = getAppDataDir();
 const ENV_PATH = path.join(APP_DATA_DIR, ".env");
 const DB_PATH = path.join(APP_DATA_DIR, "database.sqlite");
+//Multer setup for file uploads
+const upload = multer({ storage: multer.memoryStorage() });
 logger_1.log.info("=== Backend starting ===");
 logger_1.log.info(`Packaged: ${isPackaged}`);
 logger_1.log.info(`Data directory: ${APP_DATA_DIR}`);
@@ -173,6 +176,34 @@ app.post("/api/login", async (req, res) => {
     }
 });
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+// Upload endpoint—save file to folder in settings.ini
+app.post("/api/upload", upload.single("file"), async (req, res) => {
+    try {
+        if (!req.file)
+            return res.status(400).json({ error: "No file uploaded" });
+        // Load settings.ini
+        const settings = readSettings();
+        const folder = settings?.general?.imageFolder;
+        if (!folder) {
+            return res.status(500).json({ error: "Image folder not configured" });
+        }
+        // Ensure the folder exists
+        if (!fs.existsSync(folder)) {
+            fs.mkdirSync(folder, { recursive: true });
+            logger_1.log.info("Created image folder at: " + folder);
+        }
+        // Build file path (preserve original filename)
+        const savePath = path.join(folder, req.file.originalname);
+        // Save file to disk
+        fs.writeFileSync(savePath, req.file.buffer);
+        logger_1.log.info(`Saved image to: ${savePath}`);
+        res.json({ success: true, path: savePath });
+    }
+    catch (err) {
+        logger_1.log.error("Upload error: " + err.message);
+        res.status(500).json({ error: "Internal error" });
+    }
+});
 // Start backend
 const PORT = Number(process.env.PORT || 3001);
 app.listen(PORT, "0.0.0.0", () => {

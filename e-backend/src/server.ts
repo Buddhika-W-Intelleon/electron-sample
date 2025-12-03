@@ -8,6 +8,7 @@ import dotenv = require("dotenv");
 import cors = require("cors");
 import { log } from "./logger";
 import ini = require("ini");
+import multer = require("multer");
 
 log.info("Backend starting");
 
@@ -38,6 +39,8 @@ function getAppDataDir() {
 const APP_DATA_DIR = getAppDataDir();
 const ENV_PATH = path.join(APP_DATA_DIR, ".env");
 const DB_PATH = path.join(APP_DATA_DIR, "database.sqlite");
+//Multer setup for file uploads
+const upload = multer({ storage: multer.memoryStorage() });
 
 log.info("=== Backend starting ===");
 log.info(`Packaged: ${isPackaged}`);
@@ -186,6 +189,41 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+
+// Upload endpoint—save file to folder in settings.ini
+app.post("/api/upload", upload.single("file"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
+
+    // Load settings.ini
+    const settings = readSettings();
+    const folder = settings?.general?.imageFolder;
+
+    if (!folder) {
+      return res.status(500).json({ error: "Image folder not configured" });
+    }
+
+    // Ensure the folder exists
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+      log.info("Created image folder at: " + folder);
+    }
+
+    // Build file path (preserve original filename)
+    const savePath = path.join(folder, req.file.originalname);
+
+    // Save file to disk
+    fs.writeFileSync(savePath, req.file.buffer);
+
+    log.info(`Saved image to: ${savePath}`);
+
+    res.json({ success: true, path: savePath });
+
+  } catch (err: any) {
+    log.error("Upload error: " + err.message);
+    res.status(500).json({ error: "Internal error" });
+  }
+});
 
 // Start backend
 const PORT:number = Number(process.env.PORT || 3001);

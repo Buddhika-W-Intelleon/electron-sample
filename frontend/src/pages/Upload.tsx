@@ -1,10 +1,12 @@
 // frontend/src/pages/UploadPage.tsx
 import React, { useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 
 const UploadPage: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [status, setStatus] = useState<string>("");
+  const navigate = useNavigate();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -42,6 +44,9 @@ const UploadPage: React.FC = () => {
   return (
     <div className="container mt-5">
       <h1>Upload a File</h1>
+      <Button variant="secondary" className="mb-3" onClick={() => navigate("/home")}>
+        ← Back
+      </Button>
       <Form.Group controlId="fileUpload" className="mb-3">
         <Form.Label>Select a file to upload:</Form.Label>
         <Form.Control type="file" onChange={handleFileChange} />
