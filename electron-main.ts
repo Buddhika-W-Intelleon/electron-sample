@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow ,ipcMain,dialog} from "electron";
 import { fork } from "child_process";
 import * as path from "path";
 import * as fs from "fs";
@@ -8,6 +8,7 @@ let mainWindow: BrowserWindow | null = null;
 
 // --- Setup logging ---
 const logFile = path.join(app.getPath("userData"), "backend.log");
+const defaultImagePath = path.join(app.getPath("userData"), "images");
 
 function log(msg: string) {
   const line = `[${new Date().toISOString()}] ${msg}`;
@@ -120,6 +121,9 @@ process.on("unhandledRejection", (reason: any) => {
 // --- App lifecycle ---
 app.whenReady().then(() => {
   log("Electron app ready");
+  if (!fs.existsSync(defaultImagePath)) {
+    fs.mkdirSync(defaultImagePath, { recursive: true });
+  }
   createWindow();
 });
 
@@ -136,4 +140,16 @@ app.on("before-quit", () => {
   if (backend) {
     backend.kill();
   }
+});
+
+// IPC listener to open folder dialog
+ipcMain.handle("select-image-folder", async () => {
+  const result = await dialog.showOpenDialog({
+    title: "Select Image Folder",
+    properties: ["openDirectory", "createDirectory"],
+    defaultPath: defaultImagePath
+  });
+
+  if (result.canceled) return null;
+  return result.filePaths[0];
 });

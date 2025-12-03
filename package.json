@@ -24,7 +24,8 @@
 },
   "build": {
     "appId": "com.sample.electronapp",
-    "productName": "Testing-Backend-No.16",
+    "asar": true,
+    "productName": "SetupElectronSample",
     "directories": {
       "output": "dist",
       "buildResources": "assets"
@@ -38,20 +39,20 @@
     "win": {
       "target": "nsis"
     },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    },
     "extraResources": [
     {
       "from": "frontend/dist/",
       "to": "frontend/dist"
     },
     {
-      "from": "e-backend/dist-backend/",
-      "to": "e-backend/dist-backend"
-    },
-    {
       "from": "e-backend/node_modules/",
       "to": "e-backend/node_modules"
     }
-  ],
-  "asar": true
+  ]
   }
 }
