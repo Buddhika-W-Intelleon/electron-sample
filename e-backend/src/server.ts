@@ -7,8 +7,11 @@ import bcrypt = require("bcrypt");
 import dotenv = require("dotenv");
 import cors = require("cors");
 import { log } from "./logger";
-import multer = require("multer") 
+import ini = require("ini");
+
 log.info("Backend starting");
+
+
 // Detect packaged mode
 const isPackaged = (() => {
   if (process.env.PORTABLE_EXECUTABLE_DIR) return true;
@@ -42,6 +45,36 @@ log.info(`Data directory: ${APP_DATA_DIR}`);
 log.info(`Env path: ${ENV_PATH}`);
 log.info(`DB path: ${DB_PATH}`);
 
+const SETTINGS_PATH = path.join(APP_DATA_DIR, "settings.ini");
+
+// Create default .ini if it doesn't exist
+function initSettings() {
+  if (!fs.existsSync(SETTINGS_PATH)) {
+    const defaultSettings = {
+      general: {
+        imageFolder: path.join(APP_DATA_DIR, "images"),
+        theme: "light",
+      },
+      user: {
+        lastLogin: "",
+      },
+    };
+    fs.writeFileSync(SETTINGS_PATH, ini.stringify(defaultSettings));
+    log.info("Created default settings.ini at " + SETTINGS_PATH);
+  }
+}
+// Read settings
+function readSettings() {
+  if (!fs.existsSync(SETTINGS_PATH)) return {};
+  const content = fs.readFileSync(SETTINGS_PATH, "utf-8");
+  return ini.parse(content);
+}
+function writeSettings(settings: any) {
+  fs.writeFileSync(SETTINGS_PATH, ini.stringify(settings));
+  log.info("Updated settings.ini");
+}
+
+initSettings();
 // Load environment
 if (fs.existsSync(ENV_PATH)) {
   dotenv.config({ path: ENV_PATH });
@@ -106,21 +139,29 @@ app.use(cors({ origin: "*" }));
 // Routes
 app.post("/api/setup", async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, imagePath } = req.body;
     if (!username || !password) return res.status(400).json({ message: "Required fields" });
     if (hasEnvFile()) return res.status(400).json({ message: "Already configured" });
 
+    // Save admin credentials to .env
     const hashed = await bcrypt.hash(password, 10);
     fs.writeFileSync(ENV_PATH, `ADMIN_USER=${username}\nADMIN_PASS=${hashed}\n`);
-
     dotenv.config({ path: ENV_PATH });
     log.info(`.env created at ${ENV_PATH}`);
+
+    // Save image folder to settings.ini
+    const settings = readSettings();
+    settings.general = settings.general || {};
+    settings.general.imageFolder = imagePath || path.join(APP_DATA_DIR, "images");
+    writeSettings(settings);
+
     res.json({ message: "Setup complete" });
   } catch (err: any) {
     log.error("Setup error: " + err.message);
     res.status(500).json({ error: "Internal error" });
   }
 });
+
 
 app.get("/api/check-config", (_req, res) => {
   res.json({ exists: hasEnvData() });
@@ -145,43 +186,6 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
-
-const upload = multer({ storage: multer.memoryStorage() });
-
-// --- Create files table if it doesn't exist ---
-async function initFilesTable() {
-  try {
-    const exists = await db.schema.hasTable("files");
-    if (!exists) {
-      await db.schema.createTable("files", (t) => {
-        t.increments("id").primary();
-        t.text("file"); // Base64 string
-      });
-      log.info("files table created");
-    }
-  } catch (err: any) {
-    log.error("DB init error (files table): " + err.message);
-  }
-}
-initFilesTable();
-
-// --- Upload route ---
-app.post("/api/upload", upload.single("file"), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ error: "No file uploaded" });
-
-    const base64Data = req.file.buffer.toString("base64");
-
-    // Store in DB
-    await db("files").insert({ file: base64Data });
-
-    log.info(`File uploaded: ${req.file.originalname} (${req.file.size} bytes)`);
-    res.json({ success: true });
-  } catch (err: any) {
-    log.error("Upload error: " + err.message);
-    res.status(500).json({ error: "Internal error" });
-  }
-});
 
 // Start backend
 const PORT:number = Number(process.env.PORT || 3001);
