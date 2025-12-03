@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");
@@ -6,6 +7,7 @@ export default function LoginScreen() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const API_URL = "http://localhost:3001";
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     setLoading(true)
@@ -16,7 +18,7 @@ export default function LoginScreen() {
     });
     const data = await res.json();
     setLoading(false)
-    if (data.success) alert("Welcome!");
+    if (data.success) navigate("/home");
     else setError("Invalid credentials.");
   };
 
