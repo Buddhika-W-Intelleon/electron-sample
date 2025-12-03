@@ -1,6 +1,6 @@
 {
   "name": "electron-sample",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "license": "MIT",
   "main": "dist-electron/electron-main.js",
   "author": {
@@ -48,6 +48,10 @@
     {
       "from": "frontend/dist/",
       "to": "frontend/dist"
+    },
+    {
+      "from":"e-backend/dist-backend",
+      "to":"e-backend/dist-backend"
     },
     {
       "from": "e-backend/node_modules/",
