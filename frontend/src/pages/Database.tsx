@@ -132,8 +132,8 @@ const DatabasePage: React.FC = () => {
         </Table>
       )}
       <AddStudentModal
-      show={showAddStudentModal}
-      onClose={() => setShowAddStudentModal(false)}
+      show={showAddModal}
+      onClose={() => setShowAddModal(false)}
       onSubmit={handleAddStudent}
     />
     </div>
