@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function SetupScreen() {
   const [username, setUsername] = useState("");
@@ -6,6 +7,7 @@ export default function SetupScreen() {
   const [imagePath, setImagePath] = useState("");
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const API_URL = "http://localhost:3001";
 
@@ -31,11 +33,7 @@ export default function SetupScreen() {
   };
 
   if (done) {
-    return (
-      <div className="container mt-5 text-center">
-        <h1 className="text-success">Setup complete! Restart the app.</h1>
-      </div>
-    );
+    navigate("/home");
   }
 
   return (

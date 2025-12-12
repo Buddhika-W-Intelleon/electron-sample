@@ -103,6 +103,18 @@ async function initDB() {
       });
       log.info("users table created");
     }
+    await db.schema.hasTable("students").then(async (exists) => {
+      if (!exists) {
+        await db.schema.createTable("students", (table) => {
+          table.increments("studentId").primary();
+          table.string("name").notNullable();
+          table.string("address").notNullable();
+          table.string("class").notNullable();
+        });
+
+        console.log("Students table created");
+      }
+    });
 
     if (!(await db.schema.hasTable("students"))) {
       await db.schema.createTable("students", (t) => {
@@ -189,6 +201,73 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
+
+//Student stuff
+app.get("/api/students/list", async (_req, res) => {
+  try {
+    const data = await db("students").select("*");
+    res.json(data);
+  } catch (err: any) {
+    log.error("Students list error: " + err.message);
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+app.post("/api/students/add", async (req, res) => {
+  try {
+    const { name, age, course } = req.body;
+
+    if (!name || !age || !course) {
+      return res.status(400).json({ error: "Missing fields" });
+    }
+
+    const [id] = await db("students").insert({ name, age, course });
+
+    log.info(`Student added (id=${id})`);
+
+    res.json({ success: true, id });
+  } catch (err: any) {
+    log.error("Add student error: " + err.message);
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+app.put("/api/students/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, age, course } = req.body;
+
+    const exists = await db("students").where({ id }).first();
+    if (!exists) return res.status(404).json({ error: "Student not found" });
+
+    await db("students")
+      .where({ id })
+      .update({ name, age, course });
+
+    log.info(`Student updated (id=${id})`);
+
+    res.json({ success: true });
+  } catch (err: any) {
+    log.error("Update student error: " + err.message);
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+app.delete("/api/students/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const exists = await db("students").where({ id }).first();
+    if (!exists) return res.status(404).json({ error: "Student not found" });
+
+    await db("students").where({ id }).del();
+
+    log.info(`Student deleted (id=${id})`);
+
+    res.json({ success: true });
+  } catch (err: any) {
+    log.error("Delete student error: " + err.message);
+    res.status(500).json({ error: "Internal error" });
+  }
+});
+
 
 // Upload endpoint—save file to folder in settings.ini
 app.post("/api/upload", upload.single("file"), async (req, res) => {
