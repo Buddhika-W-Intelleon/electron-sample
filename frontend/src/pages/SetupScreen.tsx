@@ -7,7 +7,7 @@ export default function SetupScreen() {
   const [imagePath, setImagePath] = useState("");
   const [done, setDone] = useState(false);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const API_URL = "http://localhost:3001";
 
@@ -32,9 +32,16 @@ export default function SetupScreen() {
     if (res.ok) setDone(true);
   };
 
-  if (done) {
-    navigate("/home");
-  }
+ if (done) {
+   return (
+     <div className="container mt-5 text-center">
+       <h3>Setup Complete!</h3>
+       <p>Loading login page...</p>
+       {/* Does not work as intended */}
+       <button className="btn btn-primary mt-3" onClick={() => navigate("/login")} > Go to Login Page </button>
+     </div>
+   );
+ }
 
   return (
     <div className="container mt-5">

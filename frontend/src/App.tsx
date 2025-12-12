@@ -118,6 +118,7 @@ const styles: Record<string, React.CSSProperties> = {
         {hasConfig ? (
           <>
             <Route path="/" element={<LoginScreen />} />
+            <Route path="/login" element={<LoginScreen />} />  {/* LOGIN PAGE */}
             <Route path="/home" element={<HomePage />} />  {/* AFTER LOGIN */}
             <Route path="/database" element={<DatabasePage />} />
             <Route path="/upload" element={<UploadPage />} />

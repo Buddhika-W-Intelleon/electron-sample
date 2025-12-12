@@ -1,6 +1,6 @@
 {
   "name": "electron-sample",
-  "version": "0.0.4",
+  "version": "0.0.7",
   "license": "MIT",
   "main": "dist-electron/electron-main.js",
   "author": {

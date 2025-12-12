@@ -36,6 +36,7 @@ const DatabasePage: React.FC = () => {
   }, []);
 
   const handleAddStudent = async (student: any) => {
+    console.log(student);
     await fetch("http://localhost:3001/api/students/add", {
       method: "POST",
       headers: { "Content-Type": "application/json" },

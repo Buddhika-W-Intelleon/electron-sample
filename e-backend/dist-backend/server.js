@@ -105,7 +105,7 @@ async function initDB() {
                     table.increments("studentId").primary();
                     table.string("name").notNullable();
                     table.string("address").notNullable();
-                    table.string("class").notNullable();
+                    table.string("className").notNullable();
                 });
                 console.log("Students table created");
             }
@@ -199,12 +199,14 @@ app.get("/api/students/list", async (_req, res) => {
     }
 });
 app.post("/api/students/add", async (req, res) => {
+    logger_1.log.info("Add student request received");
     try {
-        const { name, age, course } = req.body;
-        if (!name || !age || !course) {
+        const { name, address, className } = req.body;
+        logger_1.log.info(name, address, className + "Came successfully");
+        if (!name || !address || !className) {
             return res.status(400).json({ error: "Missing fields" });
         }
-        const [id] = await db("students").insert({ name, age, course });
+        const [id] = await db("students").insert({ name, address, className });
         logger_1.log.info(`Student added (id=${id})`);
         res.json({ success: true, id });
     }
