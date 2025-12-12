@@ -11,3 +11,12 @@
 [2025-12-12 12:31:09] INFO: users table created
 [2025-12-12 12:31:29] INFO: .env created at D:\Shit\electron-sample\e-backend\.env
 [2025-12-12 12:31:29] INFO: Updated settings.ini
+[2025-12-12 14:58:15] INFO: Backend starting
+[2025-12-12 14:58:15] INFO: === Backend starting ===
+[2025-12-12 14:58:15] INFO: Packaged: false
+[2025-12-12 14:58:15] INFO: Data directory: D:\Shit\electron-sample\e-backend
+[2025-12-12 14:58:15] INFO: Env path: D:\Shit\electron-sample\e-backend\.env
+[2025-12-12 14:58:15] INFO: DB path: D:\Shit\electron-sample\e-backend\database.sqlite
+[2025-12-12 14:58:15] INFO: .env loaded
+[2025-12-12 14:58:15] INFO: Backend RUNNING on http://localhost:3001
+[2025-12-12 14:58:15] INFO: Data stored at: D:\Shit\electron-sample\e-backend
