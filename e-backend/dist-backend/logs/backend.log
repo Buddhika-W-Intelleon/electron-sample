@@ -32,3 +32,43 @@
 [2025-12-13 16:45:53] INFO: Login attempt for user: Buddhika → true
 [2025-12-13 16:45:57] INFO: Created backup directory: D:\Shit\electron-sample\e-backend\backup
 [2025-12-13 16:45:57] INFO: Database backup created: D:\Shit\electron-sample\e-backend\backup\database-backup-2025-12-13_11-15-57.sqlite
+[2025-12-13 17:10:43] INFO: Backend starting
+[2025-12-13 17:10:43] INFO: === Backend starting ===
+[2025-12-13 17:10:43] INFO: Packaged: false
+[2025-12-13 17:10:43] INFO: Data directory: D:\Shit\electron-sample\e-backend
+[2025-12-13 17:10:43] INFO: Env path: D:\Shit\electron-sample\e-backend\.env
+[2025-12-13 17:10:43] INFO: DB path: D:\Shit\electron-sample\e-backend\database.sqlite
+[2025-12-13 17:10:43] INFO: .env loaded
+[2025-12-13 17:10:43] INFO: Backend RUNNING on http://localhost:3001
+[2025-12-13 17:10:43] INFO: Data stored at: D:\Shit\electron-sample\e-backend
+[2025-12-13 17:10:52] INFO: Login attempt for user: Buddhika → true
+[2025-12-13 17:10:55] INFO: Backup created: D:\Shit\electron-sample\e-backend\backup\database-backup-2025-12-13_11-40-55.sqlite
+[2025-12-13 17:10:56] ERROR: Rclone error: 'rclone' is not recognized as an internal or external command,
+operable program or batch file.
+
+[2025-12-13 17:11:17] INFO: Backend starting
+[2025-12-13 17:11:17] INFO: === Backend starting ===
+[2025-12-13 17:11:17] INFO: Packaged: false
+[2025-12-13 17:11:17] INFO: Data directory: D:\Shit\electron-sample\e-backend
+[2025-12-13 17:11:17] INFO: Env path: D:\Shit\electron-sample\e-backend\.env
+[2025-12-13 17:11:17] INFO: DB path: D:\Shit\electron-sample\e-backend\database.sqlite
+[2025-12-13 17:11:17] INFO: .env loaded
+[2025-12-13 17:11:17] INFO: Backend RUNNING on http://localhost:3001
+[2025-12-13 17:11:17] INFO: Data stored at: D:\Shit\electron-sample\e-backend
+[2025-12-13 17:11:24] INFO: Login attempt for user: Buddhika → true
+[2025-12-13 17:11:27] INFO: Backup created: D:\Shit\electron-sample\e-backend\backup\database-backup-2025-12-13_11-41-27.sqlite
+[2025-12-13 17:11:27] ERROR: Rclone error: 'rclone' is not recognized as an internal or external command,
+operable program or batch file.
+
+[2025-12-13 17:19:14] INFO: Backend starting
+[2025-12-13 17:19:14] INFO: === Backend starting ===
+[2025-12-13 17:19:14] INFO: Packaged: false
+[2025-12-13 17:19:14] INFO: Data directory: D:\Shit\electron-sample\e-backend
+[2025-12-13 17:19:14] INFO: Env path: D:\Shit\electron-sample\e-backend\.env
+[2025-12-13 17:19:14] INFO: DB path: D:\Shit\electron-sample\e-backend\database.sqlite
+[2025-12-13 17:19:14] INFO: .env loaded
+[2025-12-13 17:19:14] INFO: Backend RUNNING on http://localhost:3001
+[2025-12-13 17:19:14] INFO: Data stored at: D:\Shit\electron-sample\e-backend
+[2025-12-13 17:19:23] INFO: Login attempt for user: Buddhika → true
+[2025-12-13 17:19:26] INFO: Backup created: D:\Shit\electron-sample\e-backend\backup\database-backup-2025-12-13_11-49-26.sqlite
+[2025-12-13 17:19:33] INFO: Rclone upload successful

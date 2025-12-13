@@ -11,6 +11,7 @@ const cors = require("cors");
 const logger_1 = require("./logger");
 const ini = require("ini");
 const multer = require("multer");
+const child_process_1 = require("child_process");
 logger_1.log.info("Backend starting");
 // Detect packaged mode
 const isPackaged = (() => {
@@ -280,33 +281,41 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
 // Backup the database
 app.post("/api/database/backup", async (_req, res) => {
     try {
-        // Ensure backup directory exists
         if (!fs.existsSync(BACKUP_DIR)) {
             fs.mkdirSync(BACKUP_DIR, { recursive: true });
-            logger_1.log.info("Created backup directory: " + BACKUP_DIR);
         }
-        // Timestamp for filename
-        const now = new Date();
-        const timestamp = now
+        const timestamp = new Date()
             .toISOString()
             .replace(/T/, "_")
             .replace(/:/g, "-")
             .replace(/\..+/, "");
-        const backupFileName = `database-backup-${timestamp}.sqlite`;
-        const backupPath = path.join(BACKUP_DIR, backupFileName);
-        // Flush WAL (important for SQLite safety)
+        const backupFile = `database-backup-${timestamp}.sqlite`;
+        const backupPath = path.join(BACKUP_DIR, backupFile);
+        // Flush SQLite WAL
         await db.raw("PRAGMA wal_checkpoint(FULL);");
-        // Copy database file
         fs.copyFileSync(DB_PATH, backupPath);
-        logger_1.log.info(`Database backup created: ${backupPath}`);
-        res.json({
-            success: true,
-            file: backupFileName,
-            path: backupPath,
+        logger_1.log.info(`Backup created: ${backupPath}`);
+        // 🔥 RCLONE SYNC
+        const RCLONE_PATH = "C:\\Users\\lapcity\\AppData\\Local\\Microsoft\\WinGet\\Links\\rclone.exe";
+        const rcloneCmd = `"${RCLONE_PATH}" copy "${BACKUP_DIR}" gdrive:MyAppBackups --create-empty-src-dirs`;
+        (0, child_process_1.exec)(rcloneCmd, (error, stdout, stderr) => {
+            if (error) {
+                logger_1.log.error("Rclone error: " + stderr);
+                return res.status(500).json({
+                    success: false,
+                    error: "Backup created but upload failed",
+                });
+            }
+            logger_1.log.info("Rclone upload successful");
+            res.json({
+                success: true,
+                backup: backupFile,
+                uploaded: true,
+            });
         });
     }
     catch (err) {
-        logger_1.log.error("Database backup failed: " + err.message);
+        logger_1.log.error("Backup error: " + err.message);
         res.status(500).json({ error: "Backup failed" });
     }
 });

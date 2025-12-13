@@ -333,7 +333,8 @@ app.post("/api/database/backup", async (_req, res) => {
     log.info(`Backup created: ${backupPath}`);
 
     // 🔥 RCLONE SYNC
-    const rcloneCmd = `rclone copy "${BACKUP_DIR}" gdrive:MyAppBackups --create-empty-src-dirs`;
+    const RCLONE_PATH = "C:\\Users\\lapcity\\AppData\\Local\\Microsoft\\WinGet\\Links\\rclone.exe";
+    const rcloneCmd = `"${RCLONE_PATH}" copy "${BACKUP_DIR}" gdrive:MyAppBackups --create-empty-src-dirs`;
 
     exec(rcloneCmd, (error, stdout, stderr) => {
       if (error) {
