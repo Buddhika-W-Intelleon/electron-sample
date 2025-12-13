@@ -20,3 +20,15 @@
 [2025-12-12 14:58:15] INFO: .env loaded
 [2025-12-12 14:58:15] INFO: Backend RUNNING on http://localhost:3001
 [2025-12-12 14:58:15] INFO: Data stored at: D:\Shit\electron-sample\e-backend
+[2025-12-13 16:45:43] INFO: Backend starting
+[2025-12-13 16:45:43] INFO: === Backend starting ===
+[2025-12-13 16:45:43] INFO: Packaged: false
+[2025-12-13 16:45:43] INFO: Data directory: D:\Shit\electron-sample\e-backend
+[2025-12-13 16:45:43] INFO: Env path: D:\Shit\electron-sample\e-backend\.env
+[2025-12-13 16:45:43] INFO: DB path: D:\Shit\electron-sample\e-backend\database.sqlite
+[2025-12-13 16:45:43] INFO: .env loaded
+[2025-12-13 16:45:44] INFO: Backend RUNNING on http://localhost:3001
+[2025-12-13 16:45:44] INFO: Data stored at: D:\Shit\electron-sample\e-backend
+[2025-12-13 16:45:53] INFO: Login attempt for user: Buddhika → true
+[2025-12-13 16:45:57] INFO: Created backup directory: D:\Shit\electron-sample\e-backend\backup
+[2025-12-13 16:45:57] INFO: Database backup created: D:\Shit\electron-sample\e-backend\backup\database-backup-2025-12-13_11-15-57.sqlite

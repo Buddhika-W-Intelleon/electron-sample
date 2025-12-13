@@ -17,6 +17,8 @@ const DatabasePage: React.FC = () => {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [showAddModal, setShowAddModal] = useState(false);
+  const [backupLoading, setBackupLoading] = useState(false);
+
 
   const fetchStudents = async () => {
       try {
@@ -45,6 +47,23 @@ const DatabasePage: React.FC = () => {
     setShowAddModal(false);
     fetchStudents();
   };
+const handleBackup = async () => {
+  try {
+    setBackupLoading(true);
+
+    const res = await fetch("http://localhost:3001/api/database/backup", {
+      method: "POST",
+    });
+
+    if (!res.ok) throw new Error("Backup failed");
+
+    alert("✅ Database backup completed!");
+  } catch (err) {
+    alert("❌ Failed to backup database");
+  } finally {
+    setBackupLoading(false);
+  }
+};
 
   return (
     <div className="container mt-5">
@@ -137,6 +156,23 @@ const DatabasePage: React.FC = () => {
       onClose={() => setShowAddModal(false)}
       onSubmit={handleAddStudent}
     />
+    <Button
+  variant="success"
+  onClick={handleBackup}
+  disabled={backupLoading}
+  style={{
+    position: "fixed",
+    bottom: "24px",
+    right: "24px",
+    borderRadius: "50px",
+    padding: "12px 18px",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
+    zIndex: 1000,
+  }}
+>
+  {backupLoading ? "Backing up..." : "💾 Backup DB"}
+</Button>
+
     </div>
     
   );

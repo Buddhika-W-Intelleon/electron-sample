@@ -41,6 +41,7 @@ const ENV_PATH = path.join(APP_DATA_DIR, ".env");
 const DB_PATH = path.join(APP_DATA_DIR, "database.sqlite");
 //Multer setup for file uploads
 const upload = multer({ storage: multer.memoryStorage() });
+const BACKUP_DIR = path.join(APP_DATA_DIR, "backup");
 logger_1.log.info("=== Backend starting ===");
 logger_1.log.info(`Packaged: ${isPackaged}`);
 logger_1.log.info(`Data directory: ${APP_DATA_DIR}`);
@@ -274,6 +275,39 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
     catch (err) {
         logger_1.log.error("Upload error: " + err.message);
         res.status(500).json({ error: "Internal error" });
+    }
+});
+// Backup the database
+app.post("/api/database/backup", async (_req, res) => {
+    try {
+        // Ensure backup directory exists
+        if (!fs.existsSync(BACKUP_DIR)) {
+            fs.mkdirSync(BACKUP_DIR, { recursive: true });
+            logger_1.log.info("Created backup directory: " + BACKUP_DIR);
+        }
+        // Timestamp for filename
+        const now = new Date();
+        const timestamp = now
+            .toISOString()
+            .replace(/T/, "_")
+            .replace(/:/g, "-")
+            .replace(/\..+/, "");
+        const backupFileName = `database-backup-${timestamp}.sqlite`;
+        const backupPath = path.join(BACKUP_DIR, backupFileName);
+        // Flush WAL (important for SQLite safety)
+        await db.raw("PRAGMA wal_checkpoint(FULL);");
+        // Copy database file
+        fs.copyFileSync(DB_PATH, backupPath);
+        logger_1.log.info(`Database backup created: ${backupPath}`);
+        res.json({
+            success: true,
+            file: backupFileName,
+            path: backupPath,
+        });
+    }
+    catch (err) {
+        logger_1.log.error("Database backup failed: " + err.message);
+        res.status(500).json({ error: "Backup failed" });
     }
 });
 // Start backend

@@ -9,6 +9,8 @@ import cors = require("cors");
 import { log } from "./logger";
 import ini = require("ini");
 import multer = require("multer");
+import { exec } from "child_process";
+
 
 log.info("Backend starting");
 
@@ -41,6 +43,9 @@ const ENV_PATH = path.join(APP_DATA_DIR, ".env");
 const DB_PATH = path.join(APP_DATA_DIR, "database.sqlite");
 //Multer setup for file uploads
 const upload = multer({ storage: multer.memoryStorage() });
+
+const BACKUP_DIR = path.join(APP_DATA_DIR, "backup");
+
 
 log.info("=== Backend starting ===");
 log.info(`Packaged: ${isPackaged}`);
@@ -304,6 +309,55 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Internal error" });
   }
 });
+
+// Backup the database
+app.post("/api/database/backup", async (_req, res) => {
+  try {
+    if (!fs.existsSync(BACKUP_DIR)) {
+      fs.mkdirSync(BACKUP_DIR, { recursive: true });
+    }
+
+    const timestamp = new Date()
+      .toISOString()
+      .replace(/T/, "_")
+      .replace(/:/g, "-")
+      .replace(/\..+/, "");
+
+    const backupFile = `database-backup-${timestamp}.sqlite`;
+    const backupPath = path.join(BACKUP_DIR, backupFile);
+
+    // Flush SQLite WAL
+    await db.raw("PRAGMA wal_checkpoint(FULL);");
+
+    fs.copyFileSync(DB_PATH, backupPath);
+    log.info(`Backup created: ${backupPath}`);
+
+    // 🔥 RCLONE SYNC
+    const rcloneCmd = `rclone copy "${BACKUP_DIR}" gdrive:MyAppBackups --create-empty-src-dirs`;
+
+    exec(rcloneCmd, (error, stdout, stderr) => {
+      if (error) {
+        log.error("Rclone error: " + stderr);
+        return res.status(500).json({
+          success: false,
+          error: "Backup created but upload failed",
+        });
+      }
+
+      log.info("Rclone upload successful");
+      res.json({
+        success: true,
+        backup: backupFile,
+        uploaded: true,
+      });
+    });
+
+  } catch (err: any) {
+    log.error("Backup error: " + err.message);
+    res.status(500).json({ error: "Backup failed" });
+  }
+});
+
 
 // Start backend
 const PORT:number = Number(process.env.PORT || 3001);
